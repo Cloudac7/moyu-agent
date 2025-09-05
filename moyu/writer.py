@@ -11,6 +11,7 @@ write_system_prompt = """
 3. 确保逻辑流畅，段落清晰，案例生动。
 4. 在文章合适的地方自然地插入数据和支持，增强说服力。
 5. 输出完整的文章正文，使用Markdown格式进行简单的排版（如加粗、列表）。
+6. 保留所有引用的事实和数据来源，确保内容真实可靠。
 """
 
 write_prompt_template = ChatPromptTemplate.from_messages([

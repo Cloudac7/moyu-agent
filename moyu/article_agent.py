@@ -1,6 +1,10 @@
 import os
+import logging
+
 from dotenv import load_dotenv
 from langchain_deepseek import ChatDeepSeek
+
+logging.basicConfig(level=logging.INFO)
 
 # 加载 .env 文件中的环境变量
 load_dotenv()
@@ -13,4 +17,4 @@ llm = ChatDeepSeek(
     model="deepseek-chat"
 )
 
-print("LLM和环境初始化成功！")
+logging.info("LLM和环境初始化成功！")
