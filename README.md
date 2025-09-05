@@ -39,7 +39,7 @@ cd moyu-agent
 uv install
 
 # 或使用 pip
-pip install -r requirements.txt
+pip install .
 ```
 
 ### 4. 环境配置
@@ -121,24 +121,7 @@ python main.py "人工智能的发展趋势" \
 # [文章标题]
 
 [文章正文内容...]
-
----
-生成时间: 2025-09-05
-主题: 人工智能的发展趋势  
-风格: 轻松有洞见
-受众: 白领人群
-字数: 约2000字
 ```
-
-## 🤝 贡献指南
-
-欢迎提交Issue和Pull Request！
-
-1. Fork本项目
-2. 创建你的特性分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交你的更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 开启一个Pull Request
 
 ## 📄 许可证
 
@@ -154,9 +137,8 @@ python main.py "人工智能的发展趋势" \
 
 如果你遇到任何问题或有建议，请：
 
-1. 查看 [常见问题](docs/FAQ.md)
-2. 提交 [Issue](https://github.com/cloudac7/moyu-agent/issues)
-3. 联系维护者
+1. 提交 [Issue](https://github.com/cloudac7/moyu-agent/issues)
+2. 联系维护者
 
 ---
 
