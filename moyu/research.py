@@ -1,3 +1,5 @@
+import asyncio
+
 from langchain_community.utilities import GoogleSerperAPIWrapper
 from langchain_core.tools import Tool
 from langchain.agents import create_react_agent, AgentExecutor
@@ -27,24 +29,53 @@ research_agent_executor = AgentExecutor(
     verbose=True # 打印出详细执行过程，调试时非常有用
 )
 
-# 4. 定义一个运行调研的函数
-def run_research(topic):
+
+# 4. 定义一个异步运行子调研Agent的函数
+async def run_worker_agent(query_info):
+    """
+    升级版的子调研Agent，接收一个包含时效性指令的字典。
+    """
     import datetime
 
-    current_year = datetime.datetime.now().year
-    print(f"调研年份: {current_year}")
+    base_query = query_info["query"]
+    require_recency = query_info["require_recency"]
+    
+    # 动态构建搜索查询
+    if require_recency:
+        # 使用相对时间过滤，而不是绝对年份“2025”
+        # get current date in YYYY-MM-DD format
+        current_date = datetime.datetime.now()
+        check_range = current_date - datetime.timedelta(days=365 * 2)
+        search_query = f'{base_query} after:{check_range.strftime("%Y-%m-%d")}'
+    else:
+        search_query = base_query # 不添加时间过滤器
 
-    research_query = f"""
-    你是一名专业的研究员。今年是{current_year}年，请全面调研以下话题：'{topic}'。
-    在调研过程中，请同时使用中文和英文进行搜索，以获取更全面的信息。
-    请搜集：
-    1. 最新的相关新闻、论文和发展。
-    2. 权威的数据和统计报告。
-    3. 不同的观点和争论点。
-    4. 相关的案例研究或实例。
-    5. 主要参考文献（请列出调研过程中引用的核心来源，包含新闻、论文、报告、权威网站等）。
+    research_task = f"""
+    You are a professional researcher. Please conduct a focused and in-depth search specifically on: '{base_query}'.
+    {'Note: The recency requirement for this query is evaluated as [High]' if require_recency else ''}
+    {('Now is ' + current_date.strftime("%Y-%m-%d")) if require_recency else ''}
+    {'Therefore, pay special attention to the latest information, data, and reports from the past two years.' if require_recency else ''}
 
-    请用中文进行总结，最终生成一份结构清晰、内容详实、并附有主要参考文献的调研报告。
+    Please collect:
+    1. Basic concepts, historical background, theories, and viewpoints.
+    2. Relevant news, papers, research, trends, statistical reports, and authoritative data.
+    3. Different perspectives and points of debate.
+    4. Related case studies or examples.
+    5. Main references (please list the core sources cited during your research, including news, papers, reports, and authoritative websites).
+
+    Your search query is: {search_query}
     """
-    research_result = research_agent_executor.invoke({"input": research_query})
-    return research_result["output"]
+    result = await research_agent_executor.ainvoke({"input": research_task})
+    return {
+        "query": base_query,
+        "search_query_used": search_query, # 记录实际使用的查询，用于调试
+        "result": result["output"]
+    }
+
+async def run_all_workers(queries):
+    """
+    并发运行所有的子调研Agent。
+    """
+    tasks = [run_worker_agent(query) for query in queries]
+    results = await asyncio.gather(*tasks)
+    return results

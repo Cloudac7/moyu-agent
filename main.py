@@ -1,7 +1,10 @@
 import os
 import logging
+import asyncio
 
-from moyu.research import run_research
+from moyu.decomposer import generate_research_queries_with_time
+from moyu.research import run_all_workers
+from moyu.synthesis import synthesize_reports
 from moyu.architect import create_outline
 from moyu.writer import write_article
 from moyu.editor import edit_article
@@ -11,16 +14,28 @@ logging.basicConfig(level=logging.INFO)
 
 from fire import Fire
 
-def chief_editor_agent(topic, style="轻松有洞见", audience="白领人群", word_count="2000"):
+async def chief_editor_agent(topic, style="轻松有洞见", audience="白领人群", word_count="2000"):
     """
     总调度函数，模拟主编的工作流程。
     """
     logging.info(f"【开始处理选题】: {topic}")
+
+    # 0. 首先，需要一个大纲来指导调研（这里有个循环依赖，需要调整）
+    # 解决方案：先生成一个初步的、简单的大纲或直接基于选题生成研究查询
+    # 或者，我们可以先运行一个快速调研来生成大纲，然后再深度调研
+    # 这里我们采用一种简单方法：主Agent直接基于选题生成初始查询列表
+    logging.info("> 主调研Agent开始分解研究任务...")
+    initial_queries = generate_research_queries_with_time(topic) # 这里先直接用topic，而非outline
+    logging.info(f"生成的研究子任务: {initial_queries}")
     
-    # 1. 调研
-    logging.info("> 调研Agent开始工作...")
-    research_report = run_research(topic)
-    logging.info("调研完成！")
+    # 1. 并发执行所有子调研任务
+    print("> 并发执行所有子调研任务...")
+    worker_results = await run_all_workers(initial_queries)
+    
+    # 汇总子调研报告
+    print("> 调研汇总Agent开始整合报告...")
+    research_report = synthesize_reports(topic, worker_results)
+    print("深度调研完成！")
     
     # 2. 生成大纲 (这里可以加入人工审核的停顿点)
     logging.info("> 大纲Agent开始工作...")
@@ -58,7 +73,7 @@ def main(
         save_to_file=True,
         save_path=None
 ):
-    result = chief_editor_agent(topic, style, audience, word_count)
+    result = asyncio.run(chief_editor_agent(topic, style, audience, word_count))
     if print_to_console:
         logging.info("\n" + "🎉 【最终文章完成】 " + "🎉")
         logging.info("="*60)
