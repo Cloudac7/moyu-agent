@@ -1,4 +1,5 @@
 import asyncio
+import logging
 
 from langchain_community.utilities import GoogleSerperAPIWrapper
 from langchain_core.tools import Tool
@@ -6,6 +7,9 @@ from langchain.agents import create_react_agent, AgentExecutor
 from langchain import hub
 
 from moyu.article_agent import llm
+
+# 获取当前模块的logger
+logger = logging.getLogger(__name__)
 
 # 1. 创建搜索工具
 search = GoogleSerperAPIWrapper()

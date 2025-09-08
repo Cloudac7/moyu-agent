@@ -5,16 +5,25 @@ import asyncio
 from fire import Fire
 from moyu.chief import chief_editor_agent
 
+# global colorful logging configuration
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s [%(levelname)s] - %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S"
+)
+
+
 def main(
-        topic, 
-        style="轻松有洞见", 
-        audience="白领人群", 
-        word_count="2000", 
+        topic,
+        style="平易近人",
+        audience="普通大众",
+        word_count="2000",
         print_to_console=True,
         save_to_file=True,
         save_path=None
 ):
-    result = asyncio.run(chief_editor_agent(topic, style, audience, word_count))
+    result = asyncio.run(chief_editor_agent(
+        topic, style, audience, word_count))
     if print_to_console:
         logging.info("\n" + "🎉 【最终文章完成】 " + "🎉")
         logging.info("="*60)
@@ -31,6 +40,7 @@ def main(
     with open(save_path, "w", encoding="utf-8") as f:
         f.write(result)
     logging.info(f"\n文章已保存至：{save_path}")
+
 
 # 运行整个流程！
 if __name__ == "__main__":

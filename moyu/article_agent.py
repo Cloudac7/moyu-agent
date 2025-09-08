@@ -4,7 +4,8 @@ import logging
 from dotenv import load_dotenv
 from langchain_deepseek import ChatDeepSeek
 
-logging.basicConfig(level=logging.INFO)
+# 获取当前模块的logger，会继承主模块的配置
+logger = logging.getLogger(__name__)
 
 # 加载 .env 文件中的环境变量
 load_dotenv()
@@ -17,4 +18,4 @@ llm = ChatDeepSeek(
     model="deepseek-chat"
 )
 
-logging.info("LLM和环境初始化成功！")
+logger.info("LLM和环境初始化成功！")

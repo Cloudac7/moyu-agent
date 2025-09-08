@@ -1,6 +1,9 @@
+import logging
 from langchain.prompts import ChatPromptTemplate
 from moyu.article_agent import llm
 
+# 获取当前模块的logger
+logger = logging.getLogger(__name__)
 
 edit_system_prompt = """
 你是一名苛刻的文案编辑。你的任务是对初稿进行最后的润色和优化。

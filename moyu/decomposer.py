@@ -1,8 +1,12 @@
+import logging
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 import json
 
 from moyu.article_agent import llm
+
+# 获取当前模块的logger
+logger = logging.getLogger(__name__)
 
 
 # 主调研Agent的提示词

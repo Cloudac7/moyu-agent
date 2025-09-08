@@ -1,5 +1,9 @@
+import logging
 from langchain_core.prompts import ChatPromptTemplate
 from moyu.article_agent import llm
+
+# 获取当前模块的logger
+logger = logging.getLogger(__name__)
 
 # 定义系统提示词，明确角色和任务
 outline_system_prompt = """

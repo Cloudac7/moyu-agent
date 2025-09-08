@@ -1,6 +1,9 @@
+import logging
 from langchain.prompts import ChatPromptTemplate
 from moyu.article_agent import llm
 
+# 获取当前模块的logger
+logger = logging.getLogger(__name__)
 
 write_system_prompt = """
 你是一名非常出色的公众号写手。请严格按照提供的【文章大纲】进行写作，并充分运用【调研报告】中的事实和数据。
